@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
-#if DEBUG
 using System.IO;
-#endif
 
 namespace ytget
 {
-    class Program
+    class ytget
     {
         static void Main(string[] args)
         {
