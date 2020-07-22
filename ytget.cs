@@ -10,11 +10,10 @@ namespace ytget
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("YouTube Downloader v1.0");
+            Console.WriteLine("ytget v1.0");
             if (args == null || args.Length == 0) ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
-            string video_id = "";
-            string raw_data = "";
+            string video_id = "", raw_data = "";
             JObject best = null;
 
             if (args[0].Contains("youtube.com") || args[0].Contains("youtu.be"))
