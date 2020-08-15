@@ -38,11 +38,11 @@ namespace ytget
                 Environment.Exit(-1);
             }
             string[] video_data_vals = raw_data.Split('&');
-#if DEBUG
+            #if DEBUG
             File.Delete("output.txt");
             foreach (string pair in video_data_vals)
                 File.AppendAllText("output.txt", pair + "\n\n");
-#endif
+            #endif
             foreach (string item in video_data_vals)
             {
                 string[] tmp = item.Split('=');
@@ -54,9 +54,9 @@ namespace ytget
                 Environment.Exit(-1);
             }
             string decoded_str = WebUtility.UrlDecode(video_data["player_response"]);
-#if DEBUG
+            #if DEBUG
             File.WriteAllText("player_response.txt", decoded_str);
-#endif
+            #endif
             dynamic decoded_obj = JObject.Parse(decoded_str);
             Console.WriteLine("Video Title: " + decoded_obj["videoDetails"]["title"]);
             if (decoded_obj["streamingData"] == null)
