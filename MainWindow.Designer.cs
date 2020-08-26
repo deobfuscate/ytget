@@ -41,13 +41,12 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(270, 111);
+            this.button1.Location = new System.Drawing.Point(233, 111);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(71, 25);
+            this.button1.Size = new System.Drawing.Size(131, 25);
             this.button1.TabIndex = 0;
             this.button1.Text = "Download";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // pictureBox1
             // 
@@ -107,7 +106,6 @@
             this.button2.TabIndex = 7;
             this.button2.Text = "Check";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // MainWindow
             // 
