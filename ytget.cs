@@ -94,10 +94,7 @@ namespace ytget
                 return "";
         }
 
-        static string RemoveInvalidChars(string filename)
-        {
-            return string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
-        }
+        static string RemoveInvalidChars(string filename) => string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
 
         static void ShowHelp()
         {
