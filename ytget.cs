@@ -3,18 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.IO;
-using System.Windows.Forms;
 
 namespace ytget
 {
     class ytget
     {
-        [STAThread]
         static void Main(string[] args)
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainWindow());
             Console.WriteLine("ytget v1.0");
             if (args == null || args.Length == 0) ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
@@ -35,7 +30,7 @@ namespace ytget
             catch
             {
                 Console.WriteLine("ERROR: Failed to connect to YouTube");
-                Environment.Exit(-1);
+                Environment.Exit(-2);
             }
             string[] video_data_vals = raw_data.Split('&');
             #if DEBUG
@@ -51,7 +46,7 @@ namespace ytget
             if (!video_data.ContainsKey("player_response"))
             {
                 Console.WriteLine("ERROR: Could not find any videos! (missing player_response)");
-                Environment.Exit(-1);
+                Environment.Exit(-3);
             }
             string decoded_str = WebUtility.UrlDecode(video_data["player_response"]);
             #if DEBUG
@@ -62,7 +57,7 @@ namespace ytget
             if (decoded_obj["streamingData"] == null)
             {
                 Console.WriteLine("ERROR: Failed to download, the video has disabled embedding");
-                Environment.Exit(-1);
+                Environment.Exit(-4);
             }
             foreach (var video in decoded_obj["streamingData"]["formats"])
             {
@@ -79,7 +74,7 @@ namespace ytget
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR: Failed to download video");
-                Environment.Exit(-1);
+                Environment.Exit(-5);
             }
             Console.WriteLine("Download done!");
         }
