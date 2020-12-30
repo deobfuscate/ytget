@@ -1,5 +1,5 @@
 # ytget
-YouTube video downloader for Windows
+YouTube video downloader for Windows command line
 
 # Usage
 Simply run `ytget.exe <link to youtube video>` and the video will download in the same directory as ytget.exe with the file name `<video title> - <youtube id>.mp4` in the highest quality available (up to 720p).
