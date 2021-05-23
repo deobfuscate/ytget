@@ -20,7 +20,7 @@ namespace ytget {
                 Environment.Exit(-1);
             }
             try {
-                raw_data = new WebClient().DownloadString($"https://www.youtube.com/get_video_info?video_id={video_id}");
+                raw_data = new WebClient().DownloadString($"https://www.youtube.com/get_video_info?video_id={video_id}&html5=1");
             }
             catch {
                 Console.WriteLine("ERROR: Failed to connect to YouTube");
