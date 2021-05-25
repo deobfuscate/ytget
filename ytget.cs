@@ -7,7 +7,7 @@ using System.IO;
 namespace ytget {
     class ytget {
         static void Main(string[] args) {
-            Console.WriteLine("ytget v1.0");
+            Console.WriteLine("ytget v1.1");
             if (args == null || args.Length == 0) ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
             string video_id = "", raw_data = "";
