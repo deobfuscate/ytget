@@ -1,6 +1,4 @@
 # ytget
-*Note: YouTube changed the API for getting video info as of July 2021*
-
 YouTube video downloader for Windows command line
 
 # Usage
