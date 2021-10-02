@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace ytget {
     class ytget {
-        static void Main(string[] args) {
+        private static readonly HttpClient client = new HttpClient();
+        static async System.Threading.Tasks.Task Main(string[] args) {
             Console.WriteLine("ytget v1.1");
             if (args == null || args.Length == 0) ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
@@ -20,35 +23,26 @@ namespace ytget {
                 Environment.Exit(-1);
             }
             try {
-                raw_data = new WebClient().DownloadString($"https://www.youtube.com/get_video_info?video_id={video_id}&html5=1");
+                var content = await client.GetStringAsync($"https://www.youtube.com/watch?v={video_id}");
+                var search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(content);
+
+                if (!search.Success) {
+                    Console.WriteLine("ERROR: Could not find video meta data! (missing ytInitialPlayerResponse)");
+                    Environment.Exit(-3);
+                }
+                raw_data = search.Result("$1");
+
+                #if DEBUG
+                File.Delete("player_response.txt");
+                File.AppendAllText("player_response.txt", raw_data);
+                #endif
             }
             catch {
                 Console.WriteLine("ERROR: YouTube API could not be resolved");
                 Environment.Exit(-2);
             }
-            string[] video_data_vals = raw_data.Split('&');
 
-            #if DEBUG
-            File.Delete("output.txt");
-            foreach (string pair in video_data_vals)
-                File.AppendAllText("output.txt", pair + "\n\n");
-            #endif
-
-            foreach (string item in video_data_vals) {
-                string[] tmp = item.Split('=');
-                video_data.Add(tmp[0], tmp[1]);
-            }
-            if (!video_data.ContainsKey("player_response")) {
-                Console.WriteLine("ERROR: Could not find any videos! (missing player_response)");
-                Environment.Exit(-3);
-            }
-            string decoded_str = WebUtility.UrlDecode(video_data["player_response"]);
-
-            #if DEBUG
-            File.WriteAllText("player_response.txt", decoded_str);
-            #endif
-
-            dynamic decoded_obj = JObject.Parse(decoded_str);
+            dynamic decoded_obj = JObject.Parse(raw_data);
             Console.WriteLine("Video Title: " + decoded_obj["videoDetails"]["title"]);
             if (decoded_obj["streamingData"] == null) {
                 Console.WriteLine("ERROR: Failed to download, the video has disabled embedding");
