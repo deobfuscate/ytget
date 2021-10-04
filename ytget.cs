@@ -13,7 +13,7 @@ namespace ytget {
             Console.WriteLine("ytget v1.1");
             if (args == null || args.Length == 0) ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
-            string video_id = "", raw_data = "", content = "";
+            string video_id = "", yt_page_data = "", content = "";
             JObject best = null;
 
             if (args[0].Contains("youtube.com") || args[0].Contains("youtu.be"))
@@ -23,32 +23,33 @@ namespace ytget {
                 Environment.Exit(-1);
             }
             try {
-                content = await client.GetStringAsync($"https://www.youtube.com/watch?v={video_id}");
+                yt_page_data = await client.GetStringAsync($"https://www.youtube.com/watch?v={video_id}");
             }
             catch {
                 Console.WriteLine("ERROR: YouTube API could not be resolved");
                 Environment.Exit(-2);
             }
-            var search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(content);
+            var search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(yt_page_data);
 
             if (!search.Success) {
                 Console.WriteLine("ERROR: Could not find video meta data! (missing ytInitialPlayerResponse)");
                 Environment.Exit(-3);
             }
-            raw_data = search.Result("$1");
+            content = search.Result("$1");
 
             #if DEBUG
             File.Delete("player_response.txt");
-            File.AppendAllText("player_response.txt", raw_data);
+            File.AppendAllText("player_response.txt", content);
             #endif
-            dynamic decoded_obj = JObject.Parse(raw_data);
+            dynamic decoded_obj = JObject.Parse(content);
             Console.WriteLine("Video Title: " + decoded_obj["videoDetails"]["title"]);
             if (decoded_obj["streamingData"] == null) {
                 Console.WriteLine("ERROR: Failed to download, the video has disabled embedding");
                 Environment.Exit(-4);
             }
             foreach (var video in decoded_obj["streamingData"]["formats"]) {
-                if (best == null) best = video;
+                if (best == null)
+                    best = video;
                 else if (video["bitrate"] > best["bitrate"])
                     best = video;
             }
