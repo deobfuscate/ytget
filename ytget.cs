@@ -10,7 +10,7 @@ namespace ytget {
     class ytget {
         private static readonly HttpClient client = new HttpClient();
         static async System.Threading.Tasks.Task Main(string[] args) {
-            Console.WriteLine("ytget v1.1");
+            Console.WriteLine("ytget v1.2");
             if (args == null || args.Length == 0) ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
             string video_id = "", yt_page_data = "", content = "";
@@ -36,7 +36,6 @@ namespace ytget {
                 Environment.Exit(-3);
             }
             content = search.Result("$1");
-
             #if DEBUG
             File.Delete("player_response.txt");
             File.AppendAllText("player_response.txt", content);
@@ -58,7 +57,7 @@ namespace ytget {
                 new WebClient().DownloadFile(best["url"].ToString(), 
                     RemoveInvalidChars($"{decoded_obj["videoDetails"]["title"]} - {decoded_obj["videoDetails"]["videoId"]}.mp4"));
             }
-            catch (Exception ex) {
+            catch {
                 Console.WriteLine("ERROR: Failed to download video");
                 Environment.Exit(-5);
             }
