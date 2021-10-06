@@ -8,7 +8,13 @@ using System.Text.RegularExpressions;
 
 namespace ytget {
     class ytget {
+        private const int ERR_INVALID_URL = -1;
+        private const int ERR_API_UNRESOLVED = -2;
+        private const int ERR_NO_METADATA = -3;
+        private const int ERR_NO_EMBEDDING = -4;
+        private const int ERR_DOWNLOAD_FAILED = -5;
         private static readonly HttpClient client = new HttpClient();
+
         static async System.Threading.Tasks.Task Main(string[] args) {
             Console.WriteLine("ytget v1.2");
             if (args == null || args.Length == 0) ShowHelp();
@@ -20,20 +26,20 @@ namespace ytget {
                 video_id = GetYouTubeId(args[0]);
             else {
                 Console.WriteLine("ERROR: Invalid URL provided");
-                Environment.Exit(-1);
+                Environment.Exit(ERR_INVALID_URL);
             }
             try {
                 yt_page_data = await client.GetStringAsync($"https://www.youtube.com/watch?v={video_id}");
             }
             catch {
                 Console.WriteLine("ERROR: YouTube API could not be resolved");
-                Environment.Exit(-2);
+                Environment.Exit(ERR_API_UNRESOLVED);
             }
             var search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(yt_page_data);
 
             if (!search.Success) {
-                Console.WriteLine("ERROR: Could not find video meta data! (missing ytInitialPlayerResponse)");
-                Environment.Exit(-3);
+                Console.WriteLine("ERROR: Could not find video metadata! (missing ytInitialPlayerResponse)");
+                Environment.Exit(ERR_NO_METADATA);
             }
             content = search.Result("$1");
             #if DEBUG
@@ -44,7 +50,7 @@ namespace ytget {
             Console.WriteLine("Video Title: " + decoded_obj["videoDetails"]["title"]);
             if (decoded_obj["streamingData"] == null) {
                 Console.WriteLine("ERROR: Failed to download, the video has disabled embedding");
-                Environment.Exit(-4);
+                Environment.Exit(ERR_NO_EMBEDDING);
             }
             foreach (var video in decoded_obj["streamingData"]["formats"]) {
                 if (best == null)
@@ -59,7 +65,7 @@ namespace ytget {
             }
             catch {
                 Console.WriteLine("ERROR: Failed to download video");
-                Environment.Exit(-5);
+                Environment.Exit(ERR_DOWNLOAD_FAILED);
             }
             Console.WriteLine("Download done!");
         }
