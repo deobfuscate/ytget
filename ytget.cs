@@ -17,10 +17,12 @@ namespace ytget {
 
         static async System.Threading.Tasks.Task Main(string[] args) {
             Console.WriteLine("ytget v1.2");
-            if (args == null || args.Length == 0) ShowHelp();
+            if (args == null || args.Length == 0)
+                ShowHelp();
             Dictionary<string, string> video_data = new Dictionary<string, string>();
             string video_id = "", yt_page_data = "", content = "";
             JObject best = null;
+            Match search = null;
 
             if (args[0].Contains("youtube.com") || args[0].Contains("youtu.be"))
                 video_id = GetYouTubeId(args[0]);
@@ -35,7 +37,7 @@ namespace ytget {
                 Console.WriteLine("ERROR: YouTube API could not be resolved");
                 Environment.Exit(ERR_API_UNRESOLVED);
             }
-            var search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(yt_page_data);
+            search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(yt_page_data);
 
             if (!search.Success) {
                 Console.WriteLine("ERROR: Could not find video metadata! (missing ytInitialPlayerResponse)");
