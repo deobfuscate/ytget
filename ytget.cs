@@ -13,6 +13,7 @@ namespace ytget {
         private const int ERR_NO_METADATA = -3;
         private const int ERR_NO_EMBEDDING = -4;
         private const int ERR_DOWNLOAD_FAILED = -5;
+        private const string PATTERN = "ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;";
         private static readonly HttpClient client = new HttpClient();
 
         static async System.Threading.Tasks.Task Main(string[] args) {
@@ -37,7 +38,7 @@ namespace ytget {
                 Console.WriteLine("ERROR: YouTube API could not be resolved");
                 Environment.Exit(ERR_API_UNRESOLVED);
             }
-            search = new Regex("ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;").Match(yt_page_data);
+            search = new Regex(PATTERN).Match(yt_page_data);
 
             if (!search.Success) {
                 Console.WriteLine("ERROR: Could not find video metadata! (missing ytInitialPlayerResponse)");
