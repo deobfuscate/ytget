@@ -35,7 +35,7 @@ namespace ytget {
                 yt_page_data = await client.GetStringAsync($"https://www.youtube.com/watch?v={video_id}");
             }
             catch {
-                Console.WriteLine("ERROR: YouTube API could not be resolved");
+                Console.WriteLine("ERROR: YouTube video url could not be resolved");
                 Environment.Exit(ERR_API_UNRESOLVED);
             }
             search = new Regex(PATTERN).Match(yt_page_data);
