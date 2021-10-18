@@ -8,11 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace ytget {
     class ytget {
-        private const int ERR_INVALID_URL = -1;
-        private const int ERR_API_UNRESOLVED = -2;
-        private const int ERR_NO_METADATA = -3;
-        private const int ERR_NO_EMBEDDING = -4;
-        private const int ERR_DOWNLOAD_FAILED = -5;
+        private const int ERR_INVALID_URL = -1, ERR_API_UNRESOLVED = -2, ERR_NO_METADATA = -3, ERR_NO_EMBEDDING = -4, ERR_DOWNLOAD_FAILED = -5;
         private const string PATTERN = "ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;";
         private static readonly HttpClient client = new HttpClient();
 
