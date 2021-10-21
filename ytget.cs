@@ -52,9 +52,7 @@ namespace ytget {
                 Environment.Exit(ERR_NO_EMBEDDING);
             }
             foreach (var video in decoded_obj["streamingData"]["formats"]) {
-                if (best == null)
-                    best = video;
-                else if (video["bitrate"] > best["bitrate"])
+                if (best == null || video["bitrate"] > best["bitrate"])
                     best = video;
             }
             Console.WriteLine("Found video! Downloading highest quality...");
