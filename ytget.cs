@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 
 namespace ytget {
-    class ytget {
+    class YTGet {
         private const int ERR_INVALID_URL = -1, ERR_API_UNRESOLVED = -2, ERR_NO_METADATA = -3, ERR_NO_EMBEDDING = -4, ERR_DOWNLOAD_FAILED = -5;
         private const string PATTERN = "ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;";
         private static readonly HttpClient client = new HttpClient();
@@ -16,25 +16,25 @@ namespace ytget {
             Console.WriteLine("ytget v1.2");
             if (args == null || args.Length == 0)
                 ShowHelp();
-            Dictionary<string, string> video_data = new Dictionary<string, string>();
-            string video_id = "", yt_page_data = "", content = "";
+            Dictionary<string, string> videoData = new Dictionary<string, string>();
+            string videoId = "", pageData = "", content = "";
             JObject best = null;
             Match search = null;
 
             if (args[0].Contains("youtube.com") || args[0].Contains("youtu.be"))
-                video_id = GetYouTubeId(args[0]);
+                videoId = GetYouTubeId(args[0]);
             else {
                 Console.WriteLine("ERROR: Invalid URL provided");
                 Environment.Exit(ERR_INVALID_URL);
             }
             try {
-                yt_page_data = await client.GetStringAsync($"https://www.youtube.com/watch?v={video_id}");
+                pageData = await client.GetStringAsync($"https://www.youtube.com/watch?v={videoId}");
             }
             catch {
                 Console.WriteLine("ERROR: YouTube video url could not be resolved");
                 Environment.Exit(ERR_API_UNRESOLVED);
             }
-            search = new Regex(PATTERN).Match(yt_page_data);
+            search = new Regex(PATTERN).Match(pageData);
 
             if (!search.Success) {
                 Console.WriteLine("ERROR: Could not find video metadata! (missing ytInitialPlayerResponse)");
@@ -45,20 +45,20 @@ namespace ytget {
             File.Delete("player_response.txt");
             File.AppendAllText("player_response.txt", content);
             #endif
-            dynamic decoded_obj = JObject.Parse(content);
-            Console.WriteLine("Video Title: " + decoded_obj["videoDetails"]["title"]);
-            if (decoded_obj["streamingData"] == null) {
+            dynamic decodedObj = JObject.Parse(content);
+            Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
+            if (decodedObj["streamingData"] == null) {
                 Console.WriteLine("ERROR: Failed to download, the video has disabled embedding");
                 Environment.Exit(ERR_NO_EMBEDDING);
             }
-            foreach (var video in decoded_obj["streamingData"]["formats"]) {
+            foreach (var video in decodedObj["streamingData"]["formats"]) {
                 if (best == null || video["bitrate"] > best["bitrate"])
                     best = video;
             }
             Console.WriteLine("Found video! Downloading highest quality...");
             try {
                 new WebClient().DownloadFile(best["url"].ToString(), 
-                    RemoveInvalidChars($"{decoded_obj["videoDetails"]["title"]} - {decoded_obj["videoDetails"]["videoId"]}.mp4"));
+                    RemoveInvalidChars($"{decodedObj["videoDetails"]["title"]} - {decodedObj["videoDetails"]["videoId"]}.mp4"));
             }
             catch {
                 Console.WriteLine("ERROR: Failed to download video");
