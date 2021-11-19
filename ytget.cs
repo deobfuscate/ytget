@@ -55,7 +55,10 @@ namespace ytget {
                 if (best == null || video["bitrate"] > best["bitrate"])
                     best = video;
             }
-            Console.WriteLine("Found video! Downloading highest quality...");
+            if (!string.IsNullOrEmpty(best["qualityLabel"].ToString()))
+                Console.WriteLine($"Found video! Downloading highest quality ({best["qualityLabel"]})...");
+            else
+                Console.WriteLine("Found video! Downloading highest quality...");
             try {
                 new WebClient().DownloadFile(best["url"].ToString(), 
                     RemoveInvalidChars($"{decodedObj["videoDetails"]["title"]} - {decodedObj["videoDetails"]["videoId"]}.mp4"));
