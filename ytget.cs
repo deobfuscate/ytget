@@ -21,7 +21,7 @@ namespace ytget {
             JObject best = null;
             Match search = null;
 
-            if (args[0].Contains("youtube.com") || args[0].Contains("youtu.be"))
+            if (GetYouTubeId(args[0]) != null)
                 videoId = GetYouTubeId(args[0]);
             else {
                 Console.WriteLine("ERROR: Invalid URL provided");
@@ -76,7 +76,7 @@ namespace ytget {
             else if (url.Contains("youtu.be"))
                 return url.Split('/')[3];
             else
-                return "";
+                return null;
         }
 
         static string RemoveInvalidChars(string filename) => string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
