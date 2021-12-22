@@ -23,23 +23,18 @@ namespace ytget {
 
             if (GetYouTubeId(args[0]) != null)
                 videoId = GetYouTubeId(args[0]);
-            else {
-                Console.WriteLine("ERROR: Invalid URL provided");
-                Environment.Exit(ERR_INVALID_URL);
-            }
+            else
+                Error("Invalid URL provided", ERR_INVALID_URL);
             try {
                 pageData = await client.GetStringAsync($"https://www.youtube.com/watch?v={videoId}");
             }
             catch {
-                Console.WriteLine("ERROR: YouTube video url could not be resolved");
-                Environment.Exit(ERR_API_UNRESOLVED);
+                Error("YouTube video url could not be resolved", ERR_API_UNRESOLVED);
             }
             search = new Regex(PATTERN).Match(pageData);
 
-            if (!search.Success) {
-                Console.WriteLine("ERROR: Could not find video metadata! (missing ytInitialPlayerResponse)");
-                Environment.Exit(ERR_NO_METADATA);
-            }
+            if (!search.Success) 
+                Error("Could not find video metadata! (missing ytInitialPlayerResponse)", ERR_NO_METADATA);
             content = search.Result("$1");
             #if DEBUG
             File.Delete("player_response.txt");
@@ -47,10 +42,8 @@ namespace ytget {
             #endif
             dynamic decodedObj = JObject.Parse(content);
             Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
-            if (decodedObj["streamingData"] == null) {
-                Console.WriteLine("ERROR: Failed to download, the video has disabled embedding");
-                Environment.Exit(ERR_NO_EMBEDDING);
-            }
+            if (decodedObj["streamingData"] == null)
+                Error("Failed to download, the video has disabled embedding", ERR_NO_EMBEDDING);
             foreach (var video in decodedObj["streamingData"]["formats"]) {
                 if (best == null || video["bitrate"] > best["bitrate"])
                     best = video;
@@ -60,12 +53,11 @@ namespace ytget {
             else
                 Console.WriteLine("Found video! Downloading highest quality...");
             try {
-                new WebClient().DownloadFile(best["url"].ToString(), 
+                new WebClient().DownloadFile(best["url"].ToString(),
                     RemoveInvalidChars($"{decodedObj["videoDetails"]["title"]} - {decodedObj["videoDetails"]["videoId"]}.mp4"));
             }
             catch {
-                Console.WriteLine("ERROR: Failed to download video");
-                Environment.Exit(ERR_DOWNLOAD_FAILED);
+                Error("Failed to download video", ERR_DOWNLOAD_FAILED);
             }
             Console.WriteLine("Download done!");
         }
@@ -80,6 +72,11 @@ namespace ytget {
         }
 
         static string RemoveInvalidChars(string filename) => string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
+
+        static void Error(string message, int errorCode) {
+            Console.WriteLine($"ERROR: {message}");
+            Environment.Exit(errorCode);
+        }
 
         static void ShowHelp() {
             Console.WriteLine("Usage: ytget.exe <link to youtube video>");
