@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace ytget {
     class YTGet {
-        private const int ERR_INVALID_URL = -1, ERR_API_UNRESOLVED = -2, ERR_NO_METADATA = -3, ERR_NO_EMBEDDING = -4, ERR_DOWNLOAD_FAILED = -5;
+        private const int SUCCESS = 0, ERR_INVALID_URL = -1, ERR_API_UNRESOLVED = -2, ERR_NO_METADATA = -3, ERR_NO_EMBEDDING = -4, ERR_DOWNLOAD_FAILED = -5;
         private const string PATTERN = "ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;";
         private static readonly HttpClient client = new HttpClient();
 
@@ -81,7 +81,7 @@ namespace ytget {
         static void ShowHelp() {
             Console.WriteLine("Usage: ytget.exe <link to youtube video>");
             Console.WriteLine("Example: ytget.exe https://www.youtube.com/watch?v=jNQXAC9IVRw");
-            Environment.Exit(0);
+            Environment.Exit(SUCCESS);
         }
     }
 }
