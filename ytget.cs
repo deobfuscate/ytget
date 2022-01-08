@@ -25,21 +25,24 @@ namespace ytget {
                 videoId = GetYouTubeId(args[0]);
             else
                 Error("Invalid URL provided", ERR_INVALID_URL);
+
             try {
                 pageData = await client.GetStringAsync($"https://www.youtube.com/watch?v={videoId}");
             }
             catch {
                 Error("YouTube video url could not be resolved", ERR_API_UNRESOLVED);
             }
-            search = new Regex(PATTERN).Match(pageData);
 
+            search = new Regex(PATTERN).Match(pageData);
             if (!search.Success) 
                 Error("Could not find video metadata! (missing ytInitialPlayerResponse)", ERR_NO_METADATA);
             content = search.Result("$1");
+
             #if DEBUG
-            File.Delete("player_response.txt");
-            File.AppendAllText("player_response.txt", content);
+                File.Delete("player_response.txt");
+                File.AppendAllText("player_response.txt", content);
             #endif
+
             dynamic decodedObj = JObject.Parse(content);
             Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
             if (decodedObj["streamingData"] == null)
