@@ -39,8 +39,7 @@ namespace ytget {
             content = search.Result("$1");
 
             #if DEBUG
-                File.Delete("player_response.txt");
-                File.AppendAllText("player_response.txt", content);
+                File.WriteAllText("player_response.txt", content);
             #endif
 
             dynamic decodedObj = JObject.Parse(content);
