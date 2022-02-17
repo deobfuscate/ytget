@@ -8,7 +8,13 @@ using System.Text.RegularExpressions;
 
 namespace ytget {
     class YTGet {
-        private const int SUCCESS = 0, ERR_INVALID_URL = -1, ERR_API_UNRESOLVED = -2, ERR_NO_METADATA = -3, ERR_NO_EMBEDDING = -4, ERR_DOWNLOAD_FAILED = -5;
+        private const int SUCCESS = 0,
+            ERR_INVALID_URL = -1,
+            ERR_API_UNRESOLVED = -2,
+            ERR_NO_METADATA = -3,
+            ERR_NO_EMBEDDING = -4,
+            ERR_DOWNLOAD_FAILED = -5,
+            ERR_NOT_SUPPORTED = -6;
         private const string PATTERN = "ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;";
         private static readonly HttpClient client = new HttpClient();
 
@@ -46,6 +52,8 @@ namespace ytget {
             Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
             if (decodedObj["streamingData"] == null)
                 Error("Failed to download, the video has disabled embedding", ERR_NO_EMBEDDING);
+            if (decodedObj["streamingData"]["formats"] == null)
+                Error("Video type not supported", ERR_NOT_SUPPORTED);
             foreach (var video in decodedObj["streamingData"]["formats"]) {
                 if (best == null || video["bitrate"] > best["bitrate"])
                     best = video;
