@@ -19,17 +19,20 @@ namespace ytget {
 
         static async System.Threading.Tasks.Task Main(string[] args) {
             Console.WriteLine("ytget v1.2");
-            if (args == null || args.Length == 0)
+            if (args == null || args.Length == 0) {
                 ShowHelp();
+            }
             Dictionary<string, string> videoData = new Dictionary<string, string>();
             string videoId = "", pageData = "", content = "";
             JObject best = null;
             Match search = null;
 
-            if (GetYouTubeId(args[0]) != null)
+            if (GetYouTubeId(args[0]) != null) {
                 videoId = GetYouTubeId(args[0]);
-            else
-                Error("Invalid URL provided", ERR_INVALID_URL);
+            }
+            else {
+                Error("Invalid URL provided", ERR_INVALID_URL); 
+            }
 
             try {
                 pageData = await client.GetStringAsync($"https://www.youtube.com/watch?v={videoId}");
@@ -39,8 +42,9 @@ namespace ytget {
             }
 
             search = new Regex(PATTERN).Match(pageData);
-            if (!search.Success) 
+            if (!search.Success) {
                 Error("Could not find video metadata! (missing ytInitialPlayerResponse)", ERR_NO_METADATA);
+            }
             content = search.Result("$1");
 
             #if DEBUG
@@ -49,11 +53,13 @@ namespace ytget {
 
             dynamic decodedObj = JObject.Parse(content);
             Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
-            if (decodedObj["streamingData"] == null || decodedObj["streamingData"]["formats"] == null)
+            if (decodedObj["streamingData"] == null || decodedObj["streamingData"]["formats"] == null) {
                 Error("Failed to download, the video has disabled embedding", ERR_NOT_SUPPORTED);
+            }
             foreach (var video in decodedObj["streamingData"]["formats"]) {
-                if (best == null || video["bitrate"] > best["bitrate"])
+                if (best == null || video["bitrate"] > best["bitrate"]) {
                     best = video;
+                }
             }
             Console.WriteLine($"Found video! Downloading highest quality{(!string.IsNullOrEmpty(best["qualityLabel"].ToString()) ? $" ({best["qualityLabel"]})" : "")}...");
             try {
