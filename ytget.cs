@@ -63,8 +63,13 @@ namespace ytget {
             }
             Console.WriteLine($"Found video! Downloading highest quality{(!string.IsNullOrEmpty(best["qualityLabel"].ToString()) ? $" ({best["qualityLabel"]})" : "")}...");
             try {
-                new WebClient().DownloadFile(best["url"].ToString(),
+                var wc = new WebClient();
+                wc.DownloadFile(best["url"].ToString(),
                     RemoveInvalidChars($"{decodedObj["videoDetails"]["title"]} - {decodedObj["videoDetails"]["videoId"]}.mp4"));
+                wc.DownloadProgressChanged += (s, e) =>
+                {
+                    Console.WriteLine(e.ProgressPercentage);
+                };
             }
             catch {
                 Error("Failed to download video", ERR_DOWNLOAD_FAILED);
