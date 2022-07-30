@@ -66,8 +66,7 @@ namespace ytget {
                 var wc = new WebClient();
                 wc.DownloadFile(best["url"].ToString(),
                     RemoveInvalidChars($"{decodedObj["videoDetails"]["title"]} - {decodedObj["videoDetails"]["videoId"]}.mp4"));
-                wc.DownloadProgressChanged += (s, e) =>
-                {
+                wc.DownloadProgressChanged += (s, e) => {
                     Console.WriteLine(e.ProgressPercentage);
                 };
             }
