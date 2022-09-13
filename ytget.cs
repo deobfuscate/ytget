@@ -77,12 +77,15 @@ namespace ytget {
         }
 
         static string GetYouTubeId(string url) {
-            if (url.Contains("youtube.com"))
+            if (url.Contains("youtube.com")) {
                 return url.Split('=')[1];
-            else if (url.Contains("youtu.be"))
+            }
+            else if (url.Contains("youtu.be")) {
                 return url.Split('/')[3];
-            else
+            }
+            else {
                 return null;
+            }
         }
 
         static string RemoveInvalidChars(string filename) => string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
