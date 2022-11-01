@@ -47,9 +47,9 @@ namespace ytget {
             }
             content = search.Result("$1");
 
-#if DEBUG
+            #if DEBUG
                 File.WriteAllText("player_response.txt", content);
-#endif
+            #endif
 
             dynamic decodedObj = JObject.Parse(content);
             Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
