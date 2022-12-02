@@ -23,27 +23,27 @@ namespace ytget {
                 ShowHelp();
             }
             Dictionary<string, string> videoData = new Dictionary<string, string>();
-            string videoId = "", pageData = "", content = "";
+            string videoID = "", pageData = "", content = "";
             JObject best = null;
             Match search = null;
 
-            if (GetYouTubeId(args[0]) != null) {
-                videoId = GetYouTubeId(args[0]);
+            if (GetYouTubeID(args[0]) != null) {
+                videoID = GetYouTubeID(args[0]);
             }
             else {
-                Error("Invalid URL provided", ERR_INVALID_URL);
+                ReportError("Invalid URL provided", ERR_INVALID_URL);
             }
 
             try {
-                pageData = await client.GetStringAsync($"https://www.youtube.com/watch?v={videoId}");
+                pageData = await client.GetStringAsync($"https://www.youtube.com/watch?v={videoID}");
             }
             catch {
-                Error("YouTube video url could not be resolved", ERR_API_UNRESOLVED);
+                ReportError("YouTube video url could not be resolved", ERR_API_UNRESOLVED);
             }
 
             search = new Regex(PATTERN).Match(pageData);
             if (!search.Success) {
-                Error("Could not find video metadata! (missing ytInitialPlayerResponse)", ERR_NO_METADATA);
+                ReportError("Could not find video metadata! (missing ytInitialPlayerResponse)", ERR_NO_METADATA);
             }
             content = search.Result("$1");
 
@@ -54,7 +54,7 @@ namespace ytget {
             dynamic decodedObj = JObject.Parse(content);
             Console.WriteLine("Video Title: " + decodedObj["videoDetails"]["title"]);
             if (decodedObj["streamingData"] == null || decodedObj["streamingData"]["formats"] == null) {
-                Error("Failed to download, the video has disabled embedding", ERR_NOT_SUPPORTED);
+                ReportError("Failed to download, the video has disabled embedding", ERR_NOT_SUPPORTED);
             }
             foreach (var video in decodedObj["streamingData"]["formats"]) {
                 if (best == null || video["bitrate"] > best["bitrate"]) {
@@ -71,12 +71,12 @@ namespace ytget {
                 };
             }
             catch {
-                Error("Failed to download video", ERR_DOWNLOAD_FAILED);
+                ReportError("Failed to download video", ERR_DOWNLOAD_FAILED);
             }
             Console.WriteLine("Download done!");
         }
 
-        static string GetYouTubeId(string url) {
+        static string GetYouTubeID(string url) {
             if (url.Contains("youtube.com")) {
                 return url.Split('=')[1];
             }
@@ -90,7 +90,7 @@ namespace ytget {
 
         static string RemoveInvalidChars(string filename) => string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
 
-        static void Error(string message, int errorCode) {
+        static void ReportError(string message, int errorCode) {
             Console.WriteLine($"ERROR: {message}");
             Environment.Exit(errorCode);
         }
